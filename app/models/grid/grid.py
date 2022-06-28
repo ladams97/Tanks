@@ -2,6 +2,7 @@ import config as config
 import app.game.globals as globals
 from app.models.grid.cells.GroundCell import GroundCell
 from app.models.grid.cells.BlockCell import BlockCell
+from app.models.grid.cells.BlockCellTop import BlockCellTop
 from app.models.grid.cells.WaterCell import WaterCell
 import csv
 
@@ -23,13 +24,15 @@ def drawGrid():
 
 # Draw a tile on screen.
 def drawTile(col, col_index, row_index, width, height):
-    # if(col == 0):
-    #     ground_tile = GroundCell(col_index * width, row_index * height)
-    #     globals.all_sprite_list.add(ground_tile)
-    if(col == 1):
+    if(col == 0):
+        ground_tile = GroundCell(col_index * width, row_index * height)
+        globals.all_sprite_list.add(ground_tile)
+    elif(col == 1):
         block_tile = BlockCell(col_index * width, row_index * height)
+        block_top = BlockCellTop(col_index * width, (row_index * height) - config.cell_height)
         globals.wall_list.add(block_tile)
         globals.all_sprite_list.add(block_tile)
+        globals.all_sprite_list.add(block_top)
     elif(col == 2):
         water_tile = WaterCell(col_index * width, row_index * height)
         globals.wall_list.add(water_tile)

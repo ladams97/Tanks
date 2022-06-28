@@ -3,18 +3,17 @@ import app.menus.pause_menu as pause_menu
 import app.models.grid.grid as GameGrid
 import pygame as pg
 import sys
+import config
 
 from app.models.tanks.PlayerTank import PlayerTank
-from playerControls import KeyPresses
 
 def run(SCREEN):     
     
     clock = pg.time.Clock()
-
     GameGrid.drawGrid()
 
     # Player tank.
-    playerTank = PlayerTank(100, 100)
+    playerTank = PlayerTank(config.cell_width, config.cell_height)
     playerTank.walls = globals.wall_list
     globals.all_sprite_list.add(playerTank)
     globals.all_sprite_list.add(playerTank.PlayerTurret)
@@ -35,7 +34,7 @@ def run(SCREEN):
                 sys.exit()
             else:
                 # KeyPresses.update(event, playerTank)
-                KeyPresses.update(event, playerTank)
+                # KeyPresses.update(event, playerTank)
 
                 if event.type == pg.KEYDOWN:
                     match event.key:

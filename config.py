@@ -4,13 +4,17 @@ import pygame as pg
 width   = 1680
 height  = 1200
 screen = pg.display.set_mode([width, height])
+scale = 8
 
-cell_width = 128
-cell_height = 96
+cell_width = 16 * scale
+cell_height = 12 * scale
 cell_sprite_height = cell_height * 2
 
-tank_width = 128
-tank_height = 112
+tank_width = 16 * scale
+tank_height = 14 * scale
+
+tank_turret_width = 20 * scale
+tank_turret_height = 20 * scale
 
 # Colours.
 black       = (0  , 0  , 0  )

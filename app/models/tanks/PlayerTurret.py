@@ -8,10 +8,10 @@ class PlayerTurret(pg.sprite.Sprite):
     def __init__(self, x, y):
         pg.sprite.Sprite.__init__(self)
 
-        self.width = 133
-        self.height = 133
+        self.width = config.tank_turret_width
+        self.height = config.tank_turret_height
 
-        sheet = SpriteSheet('assets/images/tank_cannon_sprites.png')
+        sheet = SpriteSheet('assets/images/tank_turret_sprites.png')
         self.right_sprite       = pg.transform.scale(sheet.get_sprite(5, 4, 24, 25), (self.width, self.height))
         self.up_right_sprite    = pg.transform.scale(sheet.get_sprite(37, 4, 24, 25), (self.width, self.height))
         self.up_sprite          = pg.transform.scale(sheet.get_sprite(69, 4, 24, 25), (self.width, self.height))
@@ -30,7 +30,6 @@ class PlayerTurret(pg.sprite.Sprite):
         self.rect.y += y
         self.x_centre = (self.rect.x + self.height)
         self.y_centre = (self.rect.y + self.width)
-        self.position = pg.Vector2(self.rect.x, self.rect.y)
 
     
     # Update every game loop.
@@ -39,12 +38,11 @@ class PlayerTurret(pg.sprite.Sprite):
     
     # Set the tank cannon position.
     def setPosition(self, tank):
-        tankCenter = (tank.rect.x + tank.height / 2), (tank.rect.y + tank.width / 2)
-        self.position = pg.Vector2(tankCenter)
-        self.rotate()
+        pg.draw.rect(self.image, (config.red), self.rect, 2)
+        self.rotate(tank)
 
     # Rotate the sprite to face the cursor
-    def rotate(self):
+    def rotate(self, tank):
         mouse_x, mouse_y = pg.mouse.get_pos()
 
         self.x_centre = (self.rect.x + self.height / 2)
@@ -55,11 +53,11 @@ class PlayerTurret(pg.sprite.Sprite):
         cursor_angle = round((-math.atan2(rel_y, rel_x) * (180 / math.pi)) % 360)
         cannon_angle = round(self.angle % 360)
 
-        speed = 3
+        speed = 5
 
         if(cannon_angle > cursor_angle):
             difference = cannon_angle - cursor_angle
-            if(difference < 3):
+            if(difference < 5):
                 pass
             elif(difference > 180):
                  self.angle += speed
@@ -68,7 +66,7 @@ class PlayerTurret(pg.sprite.Sprite):
 
         else:
             difference = cursor_angle - cannon_angle
-            if(difference < 3):
+            if(difference < 5):
                 pass
             elif(difference > 180):
                  self.angle -= speed
@@ -118,4 +116,5 @@ class PlayerTurret(pg.sprite.Sprite):
 
         
         self.image = pg.transform.rotate(self.original_image, image_angle)
-        self.rect = self.image.get_rect(center=self.position)
+        self.rect = self.image.get_rect(center=tank.rect.center)
+        pg.draw.rect(self.image, (config.red), self.rect, 2)

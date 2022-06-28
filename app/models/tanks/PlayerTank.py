@@ -17,13 +17,13 @@ class PlayerTank(pg.sprite.Sprite):
         # load sprites
         sheet = SpriteSheet('assets/images/tank_base_sprites.png')
         self.right_sprite       = pg.transform.scale(sheet.get_sprite(8, 9, 16, 14), (self.width, self.height))
-        self.up_right_sprite    = pg.transform.scale(sheet.get_sprite(40, 9, 16, 14), (self.width, self.height))
+        self.up_right_sprite    = pg.transform.scale(sheet.get_sprite(38, 6, 19, 19), (self.width, self.height))
         self.up_sprite          = pg.transform.scale(sheet.get_sprite(72, 9, 16, 14), (self.width, self.height))
-        self.up_left_sprite     = pg.transform.scale(sheet.get_sprite(104, 9, 16, 14), (self.width, self.height))
+        self.up_left_sprite     = pg.transform.scale(sheet.get_sprite(102, 6, 19, 19), (self.width, self.height))
         self.left_sprite        = pg.transform.scale(sheet.get_sprite(136, 9, 16, 14), (self.width, self.height))
-        self.down_left_sprite   = pg.transform.scale(sheet.get_sprite(168, 9, 16, 14), (self.width, self.height))
+        self.down_left_sprite   = pg.transform.scale(sheet.get_sprite(166, 6, 19, 19), (self.width, self.height))
         self.down_sprite        = pg.transform.scale(sheet.get_sprite(200, 9, 16, 14), (self.width, self.height))
-        self.down_right_sprite  = pg.transform.scale(sheet.get_sprite(232, 9, 16, 14), (self.width, self.height))
+        self.down_right_sprite  = pg.transform.scale(sheet.get_sprite(230, 6, 19, 19), (self.width, self.height))
 
         
         self.image      = self.right_sprite 
@@ -43,21 +43,20 @@ class PlayerTank(pg.sprite.Sprite):
 
     # Update the player every game loop.
     def update(self):
+        self.detectInput()
         self.horizontalCollision()
         self.verticalCollision()
         self.PlayerTurret.setPosition(self)
-        self.rotate()
-
         self.x_centre = (self.rect.x + self.height / 2)
         self.y_centre = (self.rect.y + self.width / 2)
+        self.rotate()
+        pg.draw.rect(self.image, (config.red), self.rect, 2)
     
     # Handle the change in speed.
-    def changeSpeed(self,x,y):
+    def move(self,x,y):
+        self.change_x = x
+        self.change_y = y
 
-        # if(self.angle == self.direction):
-        self.change_x += x
-        self.change_y += y
-    
     # # Shoot a bullet.
     # def shoot(self):
     #     targetX, targetY = pg.mouse.get_pos()
@@ -85,69 +84,113 @@ class PlayerTank(pg.sprite.Sprite):
             else:
                 self.rect.top = block.rect.bottom
     
+    # rotate tank
     def rotate(self):
 
-        tank_angle = round(self.angle % 360)
+        current_angle = round(self.angle % 360)
         speed = 3
-
-        if(tank_angle > self.direction):
-            difference = tank_angle - self.direction
+        
+        if(current_angle > self.direction):
+            difference = current_angle - self.direction
             if(difference < 3):
                 pass
             elif(difference > 180):
-                 self.angle += speed
+                current_angle += speed
             else:
-                self.angle -= speed
+                current_angle -= speed
 
         else:
-            difference = self.direction - tank_angle
+            difference = self.direction - current_angle
             if(difference < 3):
                 pass
             elif(difference > 180):
-                 self.angle -= speed
+                current_angle -= speed
             else:
-                self.angle += speed
-
-        image_angle = self.angle
+                current_angle += speed
+        
+        self.angle = current_angle
 
         # right
         if(self.angle >= 338 or self.angle < 23):
             self.original_image = self.right_sprite
 
         # up right
-        elif(self.angle >= 23 and self.angle < 68):
+        if(self.angle >= 23 and self.angle < 68):
             self.original_image = self.up_right_sprite
-            image_angle -= 45
 
         # up
-        elif(self.angle >= 68 and self.angle < 113):
+        if(self.angle >= 68 and self.angle < 113):
             self.original_image = self.up_sprite
-            image_angle -= 90
 
         # up left
-        elif(self.angle >= 113 and self.angle < 158):
+        if(self.angle >= 113 and self.angle < 158):
             self.original_image = self.up_left_sprite
-            image_angle -= 135
 
         # left
-        elif(self.angle >= 158 and self.angle < 203):
+        if(self.angle >= 158 and self.angle < 203):
             self.original_image = self.left_sprite
-            image_angle += 180
 
         # down left
-        elif(self.angle >= 203 and self.angle < 248):
+        if(self.angle >= 203 and self.angle < 248):
             self.original_image = self.down_left_sprite
-            image_angle += 135
 
         # down
-        elif(self.angle >= 248 and self.angle < 293):
+        if(self.angle >= 248 and self.angle < 293):
             self.original_image = self.down_sprite
-            image_angle += 90
 
         # down right
-        elif(self.angle >= 293 and self.angle < 338):
+        if(self.angle >= 293 and self.angle < 338):
             self.original_image = self.down_right_sprite
-            image_angle += 45
+
+        self.image = self.original_image
+    
+    # detect input from the player
+    def detectInput(self):
+
+        keys = pg.key.get_pressed()
+
+        # up right
+        if (keys[pg.K_UP] and keys[pg.K_RIGHT]) or (keys[pg.K_w] and keys[pg.K_d]):
+            self.direction = 45
+            self.move(3, -3)
         
-        self.image = pg.transform.rotate(self.original_image, image_angle)
-        # self.rect = self.image.get_rect(center=self.position)
+        # up left
+        elif (keys[pg.K_UP] and keys[pg.K_LEFT]) or (keys[pg.K_w] and keys[pg.K_a]):
+            self.direction = 135
+            self.move(-3, -3)
+
+        # down left
+        elif (keys[pg.K_DOWN] and keys[pg.K_LEFT]) or (keys[pg.K_s] and keys[pg.K_a]):
+            self.direction = 225
+            self.move(-3, 3)
+
+        # down right
+        elif (keys[pg.K_DOWN] and keys[pg.K_RIGHT]) or (keys[pg.K_s] and keys[pg.K_d]):
+            self.direction = 315
+            self.move(3, 3)
+        
+        # left
+        elif (keys[pg.K_LEFT]) or (keys[pg.K_a]):
+            self.direction = 180
+            self.move(-3, 0)
+        
+        # right
+        elif (keys[pg.K_RIGHT]) or (keys[pg.K_d]):
+            self.direction = 0
+            self.move(3, 0)
+
+        # up
+        elif (keys[pg.K_UP]) or (keys[pg.K_w]):
+            self.direction = 90
+            self.move(0, -3)
+        
+        # down
+        elif (keys[pg.K_DOWN]) or (keys[pg.K_s]):
+            self.direction = 270
+            self.move(0, 3)
+        
+        # no movement
+        else:
+            self.direction = self.angle
+            self.move(0, 0)
+            
